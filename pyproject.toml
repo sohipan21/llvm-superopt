@@ -1,0 +1,49 @@
+[project]
+name = "superopt"
+version = "0.1.0"
+description = "Finds verified missed optimizations in LLVM by superoptimizing integer code harvested from real programs"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Soham Pandey" }]
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.9",
+    "numpy>=2.0",
+    "z3-solver>=4.13",
+]
+
+[project.scripts]
+superopt = "superopt.cli:main"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.100",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.uv]
+# The package is installed as a copy, not as an editable link (see the Makefile), so the
+# installed copy must be rebuilt whenever a source file changes.
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/**/*.py" }]
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N"]
+# The enumerator uses two exceptions as control-flow signals (stop, restart), not errors.
+ignore = ["N818"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+markers = [
+    "toolchain: needs the LLVM and Alive2 toolchain (run with make test-toolchain)",
+]
+addopts = "-q"
